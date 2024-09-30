@@ -1,0 +1,21 @@
+﻿@{
+    ViewBag.Title = "Upload de PDF";
+}
+
+<h2>Upload de Arquivo PDF</h2>
+
+<form asp-action="UploadPdf" asp-controller="Home" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <label for="file">Selecione o arquivo PDF:</label>
+        <input type="file" name="file" class="form-control" id="file" />
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary">Carregar PDF</button>
+</form>
+
+@if (ViewBag.Message != null)
+{
+    <div class="alert alert-info mt-3">
+        @ViewBag.Message
+    </div>
+}
