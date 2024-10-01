@@ -21,6 +21,40 @@ namespace Extract_Data_From_PDF.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Extract_Data_From_PDF.Models.ItRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AuthorizationDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AuthorizedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Department")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EquipmentRequested")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReasonForRequest")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RequestDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Requestor")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ItRequests");
+                });
+
             modelBuilder.Entity("Extract_Data_From_PDF.Models.PdfData", b =>
                 {
                     b.Property<int>("Id")

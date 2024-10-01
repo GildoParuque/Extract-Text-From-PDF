@@ -3,6 +3,7 @@ using iText.Kernel.Pdf.Canvas.Parser;
 using iText.Kernel.Pdf;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using Extract_Data_From_PDF.Services;
 
 namespace Extract_Data_From_PDF.Controllers
 {
@@ -10,11 +11,13 @@ namespace Extract_Data_From_PDF.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly ContextDB _context;
+        private readonly IPdfService _pdfService;
 
-        public HomeController(ILogger<HomeController> logger, ContextDB context)
+        public HomeController(ILogger<HomeController> logger, ContextDB context, IPdfService pdfService)
         {
             _logger = logger;
             _context = context;
+            _pdfService = pdfService;
         }
 
         public IActionResult Index()
@@ -70,11 +73,6 @@ namespace Extract_Data_From_PDF.Controllers
             _context.SaveChanges();
         }
 
-        //private void SaveDataToDatabase(List<PdfData> dataList)
-        //{
-        //    _context.PdfDatas.AddRange(dataList);
-        //    _context.SaveChanges();
-        //}
 
         [HttpGet]
         public IActionResult UploadPdf()
@@ -83,30 +81,57 @@ namespace Extract_Data_From_PDF.Controllers
         }
 
         [HttpPost("upload")]
-        public IActionResult UploadPdf([FromForm] IFormFile file)
+        public async Task<IActionResult> UploadPdf([FromForm] IFormFile file)
         {
+            //if (file == null || file.Length == 0)
+            //{
+            //    ViewBag.Message = "Nenhum arquivo selecionado";
+            //    return View();
+            //}
+
+            //// Salve o arquivo PDF temporariamente
+            //var filePath = Path.GetTempFileName();
+            //using (var stream = new FileStream(filePath, FileMode.Create))
+            //{
+            //    file.CopyTo(stream);
+            //}
+
+            //// Extraia o texto do PDF
+            //string pdfText = ExtractTextFromPdf(filePath);
+
+            //// Faça o parsing do texto extraído
+            //var dataList = ParsePdfData(pdfText);
+
+            //// Salve os dados no banco de dados
+            //SaveDataToDatabase(dataList);
+            //ViewBag.Message = "Arquivo carregado e dados salvos com sucesso!";
+            //return View();
+
             if (file == null || file.Length == 0)
             {
-                ViewBag.Message = "Nenhum arquivo selecionado";
+                ViewBag.Message = "Nenhum arquivo selecionado.";
                 return View();
             }
 
-            // Salve o arquivo PDF temporariamente
-            var filePath = Path.GetTempFileName();
-            using (var stream = new FileStream(filePath, FileMode.Create))
+            if (Path.GetExtension(file.FileName).ToLower() != ".pdf")
             {
-                file.CopyTo(stream);
+                ViewBag.Message = "Por favor, selecione um arquivo PDF válido.";
+                return View();
             }
 
-            // Extraia o texto do PDF
-            string pdfText = ExtractTextFromPdf(filePath);
+            try
+            {
+                var dadosExtraidos = await _pdfService.ProcessarPdfAsync(file);
+                ViewBag.Message = "Arquivo carregado e dados salvos com sucesso!";
+                _logger.LogInformation("Arquivo PDF processado com sucesso.");
+                return View(dadosExtraidos);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro ao processar o arquivo PDF.");
+                ViewBag.Message = $"Ocorreu um erro: {ex.Message}";
+            }
 
-            // Faça o parsing do texto extraído
-            var dataList = ParsePdfData(pdfText);
-
-            // Salve os dados no banco de dados
-            SaveDataToDatabase(dataList);
-            ViewBag.Message = "Arquivo carregado e dados salvos com sucesso!";
             return View();
         }
         public IActionResult Privacy()

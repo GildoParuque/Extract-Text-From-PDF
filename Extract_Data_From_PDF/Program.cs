@@ -1,4 +1,5 @@
 using Extract_Data_From_PDF.Models;
+using Extract_Data_From_PDF.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +11,8 @@ builder.Services.AddDbContext<ContextDB>(options =>
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddScoped<IPdfService, PdfService>();
 
 var app = builder.Build();
 

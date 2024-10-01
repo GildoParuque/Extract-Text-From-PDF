@@ -10,5 +10,7 @@ namespace Extract_Data_From_PDF.Models
         }
 
         public DbSet<PdfData> PdfDatas { get; set; }
+
+        public DbSet<ItRequest> ItRequests { get; set; }
     }
 }
